@@ -8,7 +8,7 @@ namespace RSK_Projekt
     {
         public Node to; //destination of the packet
         public Node via; //to which neighbour forward packet
-        int bits = 0; //number of bits to transfer
+        public int bits = 0; //number of total bits transfered
         public Route(Node to, Node via)
         {
             this.to = to;

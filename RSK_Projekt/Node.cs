@@ -27,6 +27,19 @@ namespace RSK_Projekt
         {
             routing.Add(route);
         }
+        private Route GetRoute(Node node)
+        {
+            Route route = null;
+            for (int i = 0; i < routing.Count; i++)
+            {
+                if (routing[i].to == node)
+                {
+                    route = routing[i];
+                    break;
+                }
+            }
+            return route;
+        }
         public void SendPacket(Node to, int bits)
         {
             this.ReceivePacket(new Packet(this, to, bits));
@@ -38,15 +51,11 @@ namespace RSK_Projekt
                 Console.WriteLine(String.Format("[{2}][{0}] Received packet from: {1}", this.name, packet.from.name, packet.ID));
             } else
             {
-                for(int i = 0; i < routing.Count; i ++)
+                Route route = GetRoute(packet.to);
+                if(route != null)
                 {
-                    Route route = routing[i];
-                    if(route.to == packet.to)
-                    {
-                        Console.WriteLine(String.Format("[{3}][{0}] Sending packet to: {1} via {2}", this.name, route.to.name, route.via.name, packet.ID));
-                        route.SendPacket(packet);
-                        break;
-                    }
+                    Console.WriteLine(String.Format("[{3}][{0}] Sending packet to: {1} via {2}", this.name, route.to.name, route.via.name, packet.ID));
+                    route.SendPacket(packet);
                 }
             }
         }
@@ -58,7 +67,7 @@ namespace RSK_Projekt
                 if(node != this) this.SendPacket(node, bits);
             }
         }
-        public List<Node> GetRoute(Node to, List<Node> nodes = null)
+        public List<Node> RouteTo(Node to, List<Node> nodes = null)
         {
             if (nodes == null) nodes = new List<Node>();
             if (to == this)
@@ -66,15 +75,11 @@ namespace RSK_Projekt
                 nodes.Add(this);
                 return nodes;
             }
-            for(int i = 0; i < routing.Count; i++)
+            Route route = GetRoute(to);
+            if (route != null)
             {
-                Route route = routing[i];
-                if(route.to == to)
-                {
-                    nodes.Add(this);
-                    route.via.GetRoute(to, nodes);
-                    break;
-                }
+                nodes.Add(this);
+                route.via.RouteTo(to, nodes);
             }
             return nodes;
         }
@@ -82,11 +87,19 @@ namespace RSK_Projekt
         {
             Console.WriteLine("--------------------");
             Console.WriteLine(String.Format("{0} - {1}", this.id, this.name));
-            for(int i = 0; i < routing.Count; i++)
+            Console.WriteLine("Neighbours:");
+            for (int i = 0; i < neighbours.Count; i ++)
+            {
+                Node node = neighbours[i];
+                Console.WriteLine(String.Format("{0} - {1}: {2} b/s", this.name, node.name, GetRoute(node).bits));
+            }
+
+
+            Console.WriteLine("Routes:");
+            for (int i = 0; i < routing.Count; i++)
             {
                 Route route = routing[i];
-                Console.WriteLine(String.Format("[{0}] {1}", this.name, route.ToString()));
-                List<Node> r = this.GetRoute(route.to);
+                List<Node> r = this.RouteTo(route.to);
                 for (int j = 0; j < r.Count; j++)
                 {
                     if(j == 0)
