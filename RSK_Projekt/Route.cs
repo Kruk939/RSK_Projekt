@@ -6,17 +6,18 @@ namespace RSK_Projekt
 {
     class Route
     {
-        public Node to; //destination of the packet
+        public List<Node> to; //destination of the packet
         public Node via; //to which neighbour forward packet
         public int bits = 0; //number of total bits transfered
-        public Route(Node to, Node via)
+        public int packetSize = 1024;
+        public Route(List<Node> to, Node via)
         {
             this.to = to;
             this.via = via;
         }
         public void SendPacket(Packet packet)
         {
-            if(packet.to == this.to)
+            if(this.to.Contains(packet.to))
             {
                 bits += packet.bits;
                 via.ReceivePacket(packet);
@@ -25,9 +26,14 @@ namespace RSK_Projekt
                 Console.WriteLine(String.Format("[{0}]Cannot send packet", packet.ID));
             }
         }
-        override public String ToString()
+        public int GetBandwidth(double multiplayer = 2.0)
         {
-            return String.Format("Route to {0} - {1} bits", to.name, bits);
+            return (int)Math.Pow(2.0, Math.Ceiling(Math.Log((multiplayer * (double)bits), 2)));
+        }
+        public int GetPackets()
+        {
+            double ret = (double)bits / (double)packetSize;
+            return (int)Math.Ceiling(ret);
         }
     }
 }

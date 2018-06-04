@@ -6,10 +6,10 @@ namespace RSK_Projekt
 {
     class Node
     {
-        bool isCentral; // is central department
+        public bool isCentral; // is central department
         public String name; //name of department
         List<Node> neighbours; //list of neighbours of the node
-        List<Route> routing; //static routing table
+        public List<Route> routing; //static routing table
         int id; //id of the department
         public Node(int id, String name, bool central = false)
         {
@@ -32,7 +32,7 @@ namespace RSK_Projekt
             Route route = null;
             for (int i = 0; i < routing.Count; i++)
             {
-                if (routing[i].to == node)
+                if (routing[i].to.Contains(node))
                 {
                     route = routing[i];
                     break;
@@ -54,7 +54,7 @@ namespace RSK_Projekt
                 Route route = GetRoute(packet.to);
                 if(route != null)
                 {
-                    Console.WriteLine(String.Format("[{3}][{0}] Sending packet to: {1} via {2}", this.name, route.to.name, route.via.name, packet.ID));
+                    Console.WriteLine(String.Format("[{3}][{0}] Sending packet to: {1} via {2}", this.name, packet.to.name, route.via.name, packet.ID));
                     route.SendPacket(packet);
                 }
             }
@@ -99,18 +99,22 @@ namespace RSK_Projekt
             for (int i = 0; i < routing.Count; i++)
             {
                 Route route = routing[i];
-                List<Node> r = this.RouteTo(route.to);
-                for (int j = 0; j < r.Count; j++)
+                for(int j = 0; j < route.to.Count; j++)
                 {
-                    if(j == 0)
+                    List<Node> r = this.RouteTo(route.to[j]);
+                    for (int k = 0; k < r.Count; k++)
                     {
-                        Console.Write(r[j].name);
-                    } else
-                    {
-                        Console.Write(" - " + r[j].name);
+                        if (k == 0)
+                        {
+                            Console.Write(r[k].name);
+                        }
+                        else
+                        {
+                            Console.Write(" - " + r[k].name);
+                        }
                     }
+                    Console.WriteLine();
                 }
-                Console.WriteLine();
             }
             Console.WriteLine("--------------------");
         }

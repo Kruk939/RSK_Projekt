@@ -7,10 +7,7 @@ namespace RSK_Projekt
     {
         static void Main(string[] args)
         {
-            List<Node> nodes = new List<Node>();
-            int oddzial_oddzial = 2589;
-            int oddzial_centrala = 13334;
-            int centrala_oddzial = 5178;
+            Project project = new Project();
 
             Node Opole = new Node(100, "Opole", true);
             Node Nysa = new Node(200, "Nysa");
@@ -35,76 +32,48 @@ namespace RSK_Projekt
             Kluczbork.AddNeighbour(Opole);
             Kluczbork.AddNeighbour(Wroclaw);
 
-            
+
             //Lista routingu dla Opola
-            Opole.AddRoute(new Route(Nysa, Nysa));
-            Opole.AddRoute(new Route(Walbrzych, Nysa));
-            Opole.AddRoute(new Route(Legnica, Legnica));
-            Opole.AddRoute(new Route(Wroclaw, Legnica));
-            Opole.AddRoute(new Route(Kluczbork, Kluczbork));
+            
+            Opole.AddRoute(new Route(new List<Node>(new Node[] { Nysa, Walbrzych }), Nysa));
+            Opole.AddRoute(new Route(new List<Node>(new Node[] { Legnica, Wroclaw }), Legnica));
+            Opole.AddRoute(new Route(new List<Node>(new Node[] { Kluczbork }), Kluczbork));
 
             //Lista routingu dla Nysy
-            Nysa.AddRoute(new Route(Opole, Opole));
-            Nysa.AddRoute(new Route(Walbrzych, Walbrzych));
-            Nysa.AddRoute(new Route(Legnica, Walbrzych));
-            Nysa.AddRoute(new Route(Wroclaw, Walbrzych));
-            Nysa.AddRoute(new Route(Kluczbork, Opole));
+            Nysa.AddRoute(new Route(new List<Node>(new Node[] { Opole, Kluczbork }), Opole));
+            Nysa.AddRoute(new Route(new List<Node>(new Node[] { Walbrzych, Legnica, Wroclaw }), Walbrzych));
 
             //Lista routingu dla Walbrzycha
-            Walbrzych.AddRoute(new Route(Opole, Nysa));
-            Walbrzych.AddRoute(new Route(Nysa, Nysa));
-            Walbrzych.AddRoute(new Route(Legnica, Legnica));
-            Walbrzych.AddRoute(new Route(Wroclaw, Legnica));
-            Walbrzych.AddRoute(new Route(Kluczbork, Nysa));
+            Walbrzych.AddRoute(new Route(new List<Node>(new Node[] { Opole, Nysa, Kluczbork }), Nysa));
+            Walbrzych.AddRoute(new Route(new List<Node>(new Node[] { Legnica, Wroclaw, Legnica }), Legnica));
 
             //Lista routingu dla Legnicy
-            Legnica.AddRoute(new Route(Opole, Opole));
-            Legnica.AddRoute(new Route(Nysa, Walbrzych));
-            Legnica.AddRoute(new Route(Walbrzych, Walbrzych));
-            Legnica.AddRoute(new Route(Wroclaw, Wroclaw));
-            Legnica.AddRoute(new Route(Kluczbork, Wroclaw));
+            Legnica.AddRoute(new Route(new List<Node>(new Node[] { Opole }), Opole));
+            Legnica.AddRoute(new Route(new List<Node>(new Node[] { Nysa, Walbrzych }), Walbrzych));
+            Legnica.AddRoute(new Route(new List<Node>(new Node[] { Wroclaw, Kluczbork }), Wroclaw));
 
             //Lista routingu dla Wroclawia
-            Wroclaw.AddRoute(new Route(Opole, Kluczbork));
-            Wroclaw.AddRoute(new Route(Nysa, Legnica));
-            Wroclaw.AddRoute(new Route(Walbrzych, Legnica));
-            Wroclaw.AddRoute(new Route(Legnica, Legnica));
-            Wroclaw.AddRoute(new Route(Kluczbork, Kluczbork));
+            Wroclaw.AddRoute(new Route(new List<Node>(new Node[] { Opole, Kluczbork }), Kluczbork));
+            Wroclaw.AddRoute(new Route(new List<Node>(new Node[] { Nysa, Walbrzych, Legnica }), Legnica));
 
             //Lista routingu dla Kluczborka
-            Kluczbork.AddRoute(new Route(Opole, Opole));
-            Kluczbork.AddRoute(new Route(Nysa, Opole));
-            Kluczbork.AddRoute(new Route(Walbrzych, Opole));
-            Kluczbork.AddRoute(new Route(Legnica, Wroclaw));
-            Kluczbork.AddRoute(new Route(Wroclaw, Wroclaw));
-            
+            Kluczbork.AddRoute(new Route(new List<Node>(new Node[] { Opole, Nysa, Walbrzych }), Opole));
+            Kluczbork.AddRoute(new Route(new List<Node>(new Node[] { Wroclaw, Legnica }), Wroclaw));
+
             //Przypisywanie do listy wszystkich wezlow
-            nodes.Add(Opole);
-            nodes.Add(Nysa);
-            nodes.Add(Walbrzych);
-            nodes.Add(Legnica);
-            nodes.Add(Wroclaw);
-            nodes.Add(Kluczbork);
-            
-            //Wysylanie pakietow oddzial - oddzial, oddzial - centrala
-            for(int i = 0; i < nodes.Count; i++)
-            {
-                Node node = nodes[i];
-                node.Broadcast(nodes, oddzial_oddzial); //rozglaszanie do wszystkich wezlow
-                if(node != Opole) node.SendPacket(Opole, oddzial_centrala); //rozglaszanie wezla do centrali
-            }
-            Opole.Broadcast(nodes, centrala_oddzial); //rozglaszanie centrali do wszystkich wezlow
+            project.AddNode(Opole);
+            project.AddNode(Nysa);
+            project.AddNode(Walbrzych);
+            project.AddNode(Legnica);
+            project.AddNode(Wroclaw);
+            project.AddNode(Kluczbork);
+
+            project.Simulate();
 
             Console.WriteLine();
             Console.WriteLine("------------- SUMMARY -------------");
 
-            for (int i = 0; i < nodes.Count; i++)
-            {
-
-                Node node = nodes[i];
-                node.Print();
-                Console.WriteLine();
-            }
+            project.Print();
 
             Console.ReadKey();
         }
