@@ -6,11 +6,11 @@ namespace RSK_Projekt
 {
     class Node
     {
-        bool isCentral;
-        public String name;
-        List<Node> neighbours;
-        List<Route> routing;
-        int id;
+        bool isCentral; // is central department
+        public String name; //name of department
+        List<Node> neighbours; //list of neighbours of the node
+        List<Route> routing; //static routing table
+        int id; //id of the department
         public Node(int id, String name, bool central = false)
         {
             this.id = id;
@@ -55,7 +55,7 @@ namespace RSK_Projekt
             for(int i = 0; i < nodes.Count; i++)
             {
                 Node node = nodes[i];
-                this.SendPacket(node, bits);
+                if(node != this) this.SendPacket(node, bits);
             }
         }
         public List<Node> GetRoute(Node to, List<Node> nodes = null)

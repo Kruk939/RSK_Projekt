@@ -8,9 +8,9 @@ namespace RSK_Projekt
     {
         private static int id = 0;
         public int bits;
-        public Node from;
-        public Node to;
-        public int ID;
+        public Node from; //source of packet
+        public Node to; //destination of packet
+        public int ID; //packet id
         public Packet(Node from, Node to, int bits)
         {
             Packet.id++;

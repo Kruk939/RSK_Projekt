@@ -6,9 +6,9 @@ namespace RSK_Projekt
 {
     class Route
     {
-        public Node to;
-        public Node via;
-        int bits = 0;
+        public Node to; //destination of the packet
+        public Node via; //to which neighbour forward packet
+        int bits = 0; //number of bits to transfer
         public Route(Node to, Node via)
         {
             this.to = to;
